@@ -95,20 +95,62 @@ def _compress_for_analysis(src, dst):
     return dst
 
 
+def _download_link(url, folder):
+    """Récupère la vidéo d'un lien TikTok / Facebook / YouTube / Instagram (pour l'analyse seulement)."""
+    import yt_dlp
+
+    opts = {
+        "outtmpl": os.path.join(folder, "lien.%(ext)s"),
+        "format": "b[height<=720][ext=mp4]/b[height<=720]/bv*[height<=720]+ba/b",
+        "merge_output_format": "mp4",
+        "max_filesize": 300 * 1024 * 1024,
+        "noplaylist": True,
+        "quiet": True,
+        "no_warnings": True,
+        "socket_timeout": 30,
+        "retries": 2,
+        "match_filter": yt_dlp.utils.match_filter_func("duration < 900"),
+    }
+    try:
+        with yt_dlp.YoutubeDL(opts) as ydl:
+            info = ydl.extract_info(url, download=True)
+            desc = " ".join(x for x in [info.get("title") or "", info.get("description") or ""] if x)[:1500]
+    except Exception as e:
+        m = str(e).lower()
+        if "sign in" in m or "bot" in m or "login" in m or "private" in m:
+            raise HTTPException(400, "Cette plateforme bloque la lecture de ce lien (vidéo privée ou protection anti-robot). "
+                                     "Télécharge la vidéo et importe le fichier à la place.")
+        raise HTTPException(400, "Impossible de lire ce lien. Vérifie qu'il est public, ou importe le fichier vidéo.")
+    files = [f for f in os.listdir(folder) if f.startswith("lien.")]
+    if not files:
+        raise HTTPException(400, "La vidéo de ce lien est trop longue ou introuvable. Importe le fichier à la place.")
+    return os.path.join(folder, files[0]), desc
+
+
 @app.post("/api/analyser")
-async def analyser(texte: str = Form(""), video: UploadFile | None = File(None),
-                   qualite: str = Form("eco"), x_code: str = Header(default="")):
+def analyser(texte: str = Form(""), lien: str = Form(""), video: UploadFile | None = File(None),
+             qualite: str = Form("eco"), x_code: str = Header(default="")):
     auth(x_code)
-    if not texte.strip() and not video:
-        raise HTTPException(400, "Décris l'astuce ou importe la vidéo d'origine.")
+    lien = lien.strip()
+    has_file = bool(video and video.filename)
+    if not texte.strip() and not has_file and not lien:
+        raise HTTPException(400, "Colle le lien de la vidéo, importe-la, ou décris l'astuce.")
+    if lien and not lien.startswith(("http://", "https://")):
+        raise HTTPException(400, "Le lien doit commencer par https://")
     tmpdir = os.path.join(DATA, "_analyse_" + uuid.uuid4().hex[:8])
     os.makedirs(tmpdir)
     try:
-        content = [{"type": "text", "text": user_message(texte, note_video=bool(video))}]
-        if video and video.filename:
+        src = None
+        if has_file:
             src = os.path.join(tmpdir, "src")
             with open(src, "wb") as f:
                 shutil.copyfileobj(video.file, f)
+        elif lien:
+            src, desc = _download_link(lien, tmpdir)
+            if desc:
+                texte = (texte + "\n\nTitre/description d'origine (contexte seulement) : " + desc).strip()
+        content = [{"type": "text", "text": user_message(texte, note_video=bool(src))}]
+        if src:
             small = _compress_for_analysis(src, os.path.join(tmpdir, "small.mp4"))
             if os.path.getsize(small) > 40 * 1024 * 1024:
                 raise HTTPException(400, "Vidéo trop longue : coupe-la à moins de 3 minutes.")

@@ -3,87 +3,124 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#123D2F">
 <title>Astuko</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Figtree:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#17110c; --card:#221a13; --card2:#2b2118; --line:#3a2d21;
-  --txt:#f6ede3; --muted:#b8a593; --or:#f2a516; --or2:#ffcf5c; --terre:#d0612b;
-  --vert:#3fb37f; --rouge:#e5533d; --r:18px;
+  --vert:#123D2F; --vert2:#1B4D3C; --vert-txt:#B9CBC2; --vert-line:#4C7466;
+  --sable:#EDE4D6; --carte:#F7F1E8; --bord:#D8CBB8;
+  --terre:#C4552D; --terre-fonce:#A8411E; --or:#E9B04B;
+  --ink:#14251E; --muted:#5B5247; --creme:#F4EDE2;
+  --ok:#1F7A55; --rouge:#B3321F;
 }
-*{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.5 Inter,system-ui,sans-serif}
-body{background:
-  radial-gradient(1200px 500px at 110% -10%, rgba(242,165,22,.16), transparent 60%),
-  radial-gradient(800px 400px at -20% 10%, rgba(208,97,43,.14), transparent 60%), var(--bg);min-height:100vh}
-.wrap{max-width:640px;margin:0 auto;padding:18px 16px 80px}
-header{display:flex;align-items:center;gap:12px;margin:6px 0 18px}
-.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--or),var(--terre));
-  display:grid;place-items:center;font:800 22px 'Bricolage Grotesque';color:#1a0f05;box-shadow:0 8px 24px rgba(242,165,22,.3)}
-h1{font:800 24px/1.1 'Bricolage Grotesque',sans-serif;margin:0;letter-spacing:-.02em}
-header p{margin:2px 0 0;color:var(--muted);font-size:13px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:16px}
-.card h2{font:700 18px 'Bricolage Grotesque';margin:0 0 4px;display:flex;align-items:center;gap:10px}
-.num{width:26px;height:26px;border-radius:50%;background:var(--or);color:#1a0f05;display:grid;place-items:center;font-size:14px;font-weight:800;flex:none}
-.hint{color:var(--muted);font-size:13px;margin:0 0 14px}
-label{display:block;font-weight:600;font-size:13px;margin:14px 0 6px;color:#e9dccd}
-textarea,input[type=text],select{width:100%;background:var(--card2);border:1px solid var(--line);color:var(--txt);
-  border-radius:12px;padding:12px;font:inherit;outline:none;transition:border .15s}
-textarea:focus,input:focus,select:focus{border-color:var(--or)}
-textarea{resize:vertical;min-height:90px}
-.file{display:flex;align-items:center;gap:10px;background:var(--card2);border:1px dashed #5a4532;border-radius:12px;padding:12px;cursor:pointer}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--sable);color:var(--ink);font:15px/1.5 Figtree,system-ui,sans-serif}
+button,input,textarea,select{font:inherit;color:inherit}
+.hero{background:var(--vert);color:var(--creme);border-radius:0 0 32px 32px;padding:calc(22px + env(safe-area-inset-top)) 0 24px}
+.wrap{max-width:560px;margin:0 auto;padding:0 20px}
+.top{display:flex;align-items:center;justify-content:space-between}
+.logo{font:800 20px Unbounded,sans-serif;letter-spacing:.02em}
+.motif{display:flex;gap:5px}
+.motif i{width:10px;height:10px;transform:rotate(45deg)}
+.hero h1{font:600 26px/1.14 Unbounded,sans-serif;margin:18px 0 18px}
+.hero h1 span{color:var(--or)}
+.steps{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--vert-txt)}
+.steps .n{width:24px;height:24px;border-radius:50%;border:1px solid var(--vert-line);display:grid;place-items:center;font-weight:700;flex:none}
+.steps .on .n{background:var(--or);border-color:var(--or);color:var(--vert)}
+.steps .on{color:var(--creme)}
+.steps .done .n{background:var(--vert-line);border-color:var(--vert-line);color:var(--creme)}
+.steps .st{display:flex;align-items:center;gap:7px}
+.steps .tr{flex:1;max-width:28px;height:1px;background:var(--vert-line)}
+main{padding:20px 0 60px}
+.card{background:var(--carte);border:1px solid var(--bord);border-radius:24px;padding:20px;margin-bottom:16px}
+.card h2{font:600 17px Unbounded,sans-serif;margin:0 0 4px}
+.hint{color:var(--muted);font-size:13px;margin:0 0 16px}
+label.l{display:block;font-weight:700;font-size:12px;color:var(--muted);margin:16px 0 7px;letter-spacing:.02em}
+textarea,input[type=text],input[type=url],select{width:100%;background:#FFFCF7;border:1px solid var(--bord);border-radius:16px;padding:13px 14px;outline:none;transition:border .15s,box-shadow .15s}
+textarea:focus,input:focus,select:focus{border-color:var(--terre);box-shadow:0 0 0 3px rgba(196,85,45,.15)}
+textarea{resize:vertical;min-height:80px}
+.link{display:flex;align-items:center;gap:10px;background:#FFFCF7;border:1.5px solid var(--terre);border-radius:20px;padding:6px 6px 6px 14px}
+.link input{border:0;padding:10px 0;background:transparent;box-shadow:none!important;min-width:0}
+.link .ic{color:var(--terre);flex:none;display:flex}
+.paste{flex:none;height:44px;padding:0 14px;border-radius:14px;border:0;background:var(--terre);color:#fff;font-weight:700;cursor:pointer}
+.plats{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
+.plats span{font-size:11px;font-weight:700;color:var(--muted);background:var(--sable);border-radius:99px;padding:4px 10px}
+.or{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:12px;margin:16px 0 0}
+.or:before,.or:after{content:"";flex:1;height:1px;background:var(--bord)}
+.file{display:flex;align-items:center;gap:14px;background:#FFFCF7;border:1px dashed #BFAE96;border-radius:20px;padding:14px;cursor:pointer;margin-top:14px}
 .file input{display:none}
-.file span{color:var(--muted);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.file b{color:var(--or2);font-weight:600;flex:none}
-.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.seg button{background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:12px;padding:12px;text-align:left;cursor:pointer;font:inherit}
-.seg button small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
-.seg button.on{border-color:var(--or);background:rgba(242,165,22,.12)}
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:18px;padding:15px;border:0;border-radius:14px;
-  background:linear-gradient(135deg,var(--or),#e8890f);color:#1a0f05;font:700 16px Inter;cursor:pointer;box-shadow:0 10px 24px rgba(242,165,22,.25)}
-.btn:disabled{opacity:.55;cursor:wait}
-.btn.ghost{background:var(--card2);color:var(--txt);box-shadow:none;border:1px solid var(--line)}
-.alert{border-radius:12px;padding:12px 14px;font-size:14px;margin-bottom:12px;border:1px solid}
-.alert.ok{background:rgba(63,179,127,.1);border-color:rgba(63,179,127,.4)}
-.alert.prudence{background:rgba(242,165,22,.1);border-color:rgba(242,165,22,.45)}
-.alert.danger,.alert.err{background:rgba(229,83,61,.12);border-color:rgba(229,83,61,.5)}
-.scene{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:12px;margin-top:10px}
-.scene-top{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.scene-top .badge{background:var(--or);color:#1a0f05;font-weight:800;font-size:11px;border-radius:6px;padding:3px 7px}
-.scene-top input{flex:1;padding:7px 10px;font-size:13px;background:var(--card)}
-.x{background:none;border:0;color:var(--muted);font-size:20px;cursor:pointer;padding:0 4px}
-.scene textarea{min-height:60px;background:var(--card)}
-details summary{cursor:pointer;color:var(--muted);font-size:12px;margin-top:8px}
-details textarea{margin-top:6px;font-size:12px;min-height:80px}
-.row{display:flex;gap:10px;align-items:center}
-.row > *{flex:1}
-input[type=range]{accent-color:var(--or);width:100%}
-.cost{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding:12px 14px;border-radius:12px;background:rgba(242,165,22,.08);border:1px solid rgba(242,165,22,.3)}
-.cost b{font:800 20px 'Bricolage Grotesque';color:var(--or2)}
-.bar{height:10px;background:var(--card2);border-radius:99px;overflow:hidden;margin:14px 0 8px}
-.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--terre),var(--or),var(--or2));transition:width .6s}
-.etape{color:var(--muted);font-size:14px}
-video{width:100%;max-height:70vh;border-radius:14px;background:#000;margin-top:6px}
-.pub{white-space:pre-wrap;background:var(--card2);border-radius:12px;padding:12px;font-size:14px;border:1px solid var(--line)}
-.hist a{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);color:var(--txt);text-decoration:none;font-size:14px}
-.hist a span{color:var(--muted);font-size:12px;flex:none}
-.hidden{display:none!important}
-.spin{width:16px;height:16px;border:2px solid rgba(0,0,0,.25);border-top-color:#1a0f05;border-radius:50%;animation:s .8s linear infinite}
-@keyframes s{to{transform:rotate(360deg)}}
+.file .ico{width:44px;height:44px;border-radius:14px;background:var(--vert);color:var(--creme);display:grid;place-items:center;flex:none}
+.file b{display:block;font-size:14px}
+.file span{font-size:12px;color:var(--muted);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:230px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seg button{background:#FFFCF7;border:1px solid var(--bord);border-radius:18px;padding:14px;text-align:left;cursor:pointer}
+.seg button b{display:block;font-size:14px}
+.seg button small{color:var(--muted);font-size:12px}
+.seg button.on{background:var(--vert);border-color:var(--vert);color:var(--creme)}
+.seg button.on small{color:var(--vert-txt)}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:20px;height:58px;border:0;border-radius:999px;
+  background:var(--terre);color:#fff;font:600 15px Unbounded,sans-serif;cursor:pointer;text-decoration:none;transition:transform .1s,background .15s}
+.btn:active{transform:scale(.98)}
+.btn:hover{background:var(--terre-fonce)}
+.btn:disabled{opacity:.6;cursor:wait}
+.btn.vert{background:var(--vert)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--bord);font-family:Figtree;font-weight:700;height:50px;margin-top:12px}
+.alert{border-radius:16px;padding:13px 15px;font-size:14px;margin-bottom:14px;border:1px solid}
+.alert b{display:block;margin-bottom:2px}
+.alert.ok{background:#E3F0E8;border-color:#A9CDB9;color:#123D2F}
+.alert.prudence{background:#FBEFD6;border-color:#E9C987;color:#5A3D08}
+.alert.danger,.alert.err{background:#F8E1DA;border-color:#E3A895;color:#6E1F10}
+.scene{background:#FFFCF7;border:1px solid var(--bord);border-radius:20px;padding:14px;margin-top:12px}
+.scene-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.scene-top .num{width:28px;height:28px;border-radius:50%;background:var(--vert);color:var(--creme);display:grid;place-items:center;font-weight:700;font-size:13px;flex:none}
+.scene-top input{flex:1;padding:8px 12px;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:10px;background:var(--sable)}
+.x{width:36px;height:36px;border-radius:10px;border:0;background:transparent;color:var(--muted);font-size:22px;cursor:pointer;flex:none}
+.scene textarea{min-height:64px}
+details summary{cursor:pointer;color:var(--terre-fonce);font-size:12px;font-weight:700;margin-top:10px}
+details textarea{margin-top:8px;font-size:12px;min-height:84px;color:var(--muted)}
+input[type=range]{accent-color:var(--terre);width:100%}
+.cost{display:flex;justify-content:space-between;align-items:center;margin-top:18px;padding:14px 16px;border-radius:18px;background:var(--vert);color:var(--creme)}
+.cost span{font-size:13px;color:var(--vert-txt)}
+.cost b{font:800 20px Unbounded,sans-serif;color:var(--or)}
+.bar{height:10px;background:var(--sable);border-radius:99px;overflow:hidden;margin:16px 0 10px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--vert),var(--terre),var(--or));transition:width .6s}
+.etape{font-weight:700;font-size:14px}
+video{width:100%;max-height:72vh;border-radius:20px;background:#000;display:block}
+.pub{white-space:pre-wrap;background:#FFFCF7;border-radius:16px;padding:14px;font-size:14px;border:1px solid var(--bord)}
+.hist a{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:13px 0;border-bottom:1px solid var(--bord);color:var(--ink);text-decoration:none;font-size:14px;font-weight:500}
+.hist a:last-child{border-bottom:0}
+.pill{font-size:11px;font-weight:700;border-radius:99px;padding:3px 9px;flex:none}
+.pill.termine{background:#E3F0E8;color:var(--ok)}
+.pill.en_cours{background:#FBEFD6;color:#7A5208}
+.pill.erreur{background:#F8E1DA;color:var(--rouge)}
 .small{font-size:12px;color:var(--muted)}
+.hidden{display:none!important}
+.spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:s .8s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div class="logo">Ak</div>
-    <div><h1>Astuko</h1><p>De l'astuce repérée à la vidéo prête à publier</p></div>
-  </header>
+<div class="hero">
+  <div class="wrap">
+    <div class="top">
+      <div class="logo">ASTUKO</div>
+      <div class="motif" aria-hidden="true"><i style="background:#C4552D"></i><i style="background:#E9B04B"></i><i style="background:#F4EDE2"></i></div>
+    </div>
+    <h1>Les astuces du monde, racontées <span>à l'africaine.</span></h1>
+    <div class="steps" id="steps">
+      <div class="st on" data-s="1"><div class="n">1</div>Astuce</div><div class="tr"></div>
+      <div class="st" data-s="2"><div class="n">2</div>Script</div><div class="tr"></div>
+      <div class="st" data-s="3"><div class="n">3</div>Vidéo</div>
+    </div>
+  </div>
+</div>
 
+<main class="wrap">
   <div id="cardCode" class="card hidden">
     <h2>Code d'accès</h2>
-    <p class="hint">Entre ton code pour utiliser l'outil (il sera retenu sur ce téléphone).</p>
+    <p class="hint">Entre ton code une seule fois, il sera retenu sur ce téléphone.</p>
     <input type="text" id="code" placeholder="Ton code" autocomplete="off">
     <button class="btn" id="btnCode">Entrer</button>
   </div>
@@ -92,57 +129,73 @@ video{width:100%;max-height:70vh;border-radius:14px;background:#000;margin-top:6
     <div id="errBox" class="alert err hidden"></div>
 
     <div class="card" id="card1">
-      <h2><span class="num">1</span>L'astuce</h2>
-      <p class="hint">Importe la vidéo que tu as repérée (l'outil la regarde pour comprendre l'astuce, puis crée une vidéo entièrement nouvelle), ou décris l'astuce avec tes mots.</p>
-      <label class="file" for="video"><b>📹 Vidéo d'origine</b><span id="videoName">Choisir un fichier (facultatif)</span><input type="file" id="video" accept="video/*"></label>
-      <label for="texte">Description ou transcription</label>
-      <textarea id="texte" placeholder="Ex. : astuce pour enlever les taches jaunes des vêtements blancs avec du bicarbonate et du citron…"></textarea>
-      <label>Qualité des images</label>
-      <div class="seg" id="qualite">
-        <button data-q="eco" class="on">Économique<small>≈ 0,20 $ par plan</small></button>
-        <button data-q="premium">Premium<small>Plus réaliste · ≈ 0,40 $ par plan</small></button>
+      <h2>L'astuce</h2>
+      <p class="hint">Colle le lien de la vidéo repérée. L'IA la regarde pour comprendre l'astuce, puis crée une vidéo entièrement nouvelle.</p>
+      <div class="link">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 14a4 4 0 005.7 0l3-3a4 4 0 00-5.7-5.7l-1 1"></path><path d="M14 10a4 4 0 00-5.7 0l-3 3a4 4 0 005.7 5.7l1-1"></path></svg></span>
+        <input type="url" id="lien" placeholder="https://…" inputmode="url" autocomplete="off" aria-label="Lien de la vidéo">
+        <button class="paste" id="btnPaste" type="button">Coller</button>
       </div>
-      <button class="btn" id="btnAnalyser">Analyser l'astuce</button>
+      <div class="plats"><span>Facebook</span><span>TikTok</span><span>YouTube</span><span>Instagram</span></div>
+
+      <div class="or">ou</div>
+      <label class="file" for="video">
+        <span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"></path></svg></span>
+        <div><b>Importer le fichier vidéo</b><span id="videoName">Si le lien ne passe pas</span></div>
+        <input type="file" id="video" accept="video/*">
+      </label>
+
+      <label class="l" for="texte">Précisions (facultatif)</label>
+      <textarea id="texte" placeholder="Ex. : insiste sur les quantités, public : les mamans…"></textarea>
+
+      <label class="l">Qualité des images</label>
+      <div class="seg" id="qualite">
+        <button data-q="eco" class="on" type="button"><b>Standard</b><small>≈ 0,20 $ / plan</small></button>
+        <button data-q="premium" type="button"><b>Cinéma</b><small>≈ 0,40 $ / plan</small></button>
+      </div>
+      <button class="btn" id="btnAnalyser">Créer le script <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
     </div>
 
     <div class="card hidden" id="card2">
-      <h2><span class="num">2</span>Le script</h2>
+      <h2>Le script</h2>
       <p class="hint">Relis et corrige si besoin. Rien n'est encore dépensé en vidéo.</p>
       <div id="secu"></div>
-      <label for="titre">Titre (affiché au début de la vidéo)</label>
+      <label class="l" for="titre">Titre affiché au début</label>
       <input type="text" id="titre">
       <div id="scenes"></div>
-      <button class="btn ghost" id="btnAdd" style="margin-top:10px">+ Ajouter une scène</button>
+      <button class="btn ghost" id="btnAdd" type="button">+ Ajouter une scène</button>
 
-      <label for="voix">Voix off</label>
+      <label class="l" for="voix">Voix off</label>
       <select id="voix"><option value="">Chargement des voix…</option></select>
-      <div class="row">
-        <div><label for="vitesse">Vitesse de la voix : <span id="vitVal">1.05</span></label>
-        <input type="range" id="vitesse" min="0.85" max="1.25" step="0.05" value="1.05"></div>
-      </div>
-      <label class="file" for="musique"><b>🎵 Musique de fond</b><span id="musName">Facultatif (MP3 libre de droits)</span><input type="file" id="musique" accept="audio/*"></label>
+      <label class="l" for="vitesse">Vitesse de la voix : <span id="vitVal">1.05</span></label>
+      <input type="range" id="vitesse" min="0.85" max="1.25" step="0.05" value="1.05">
+      <label class="file" for="musique">
+        <span class="ico" style="background:#E9B04B;color:#123D2F"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg></span>
+        <div><b>Musique de fond</b><span id="musName">Facultatif · MP3 libre de droits</span></div>
+        <input type="file" id="musique" accept="audio/*">
+      </label>
 
       <div class="cost"><span>Coût estimé MiniMax</span><b id="cout">—</b></div>
       <button class="btn" id="btnGenerer">Générer la vidéo</button>
     </div>
 
     <div class="card hidden" id="card3">
-      <h2><span class="num">3</span>Ta vidéo</h2>
+      <h2>Ta vidéo</h2>
       <div id="prog">
         <div class="bar"><i id="barFill"></i></div>
         <div class="etape" id="etape">Démarrage…</div>
-        <p class="small">Tu peux fermer cette page : la vidéo continue de se fabriquer et tu la retrouveras dans « Mes vidéos ».</p>
+        <p class="small">Tu peux fermer cette page : la vidéo continue de se fabriquer, tu la retrouveras dans « Mes vidéos ».</p>
       </div>
       <div id="result" class="hidden">
         <video id="player" controls playsinline></video>
-        <a class="btn" id="dl" download>⬇️ Télécharger la vidéo</a>
-        <label>Texte de publication</label>
+        <a class="btn" id="dl" download>Télécharger la vidéo</a>
+        <label class="l">Texte de publication</label>
         <div class="pub" id="pub"></div>
-        <button class="btn ghost" id="btnCopy">Copier le texte</button>
-        <div id="warns"></div>
+        <button class="btn ghost" id="btnCopy" type="button">Copier le texte</button>
+        <div id="warns" style="margin-top:12px"></div>
       </div>
       <div id="jobErr" class="alert err hidden" style="margin-top:12px"></div>
-      <button class="btn ghost" id="btnNew">Nouvelle astuce</button>
+      <button class="btn vert" id="btnNew" type="button">Nouvelle astuce</button>
     </div>
 
     <div class="card">
@@ -150,7 +203,7 @@ video{width:100%;max-height:70vh;border-radius:14px;background:#000;margin-top:6
       <div class="hist" id="hist"><p class="small">Aucune vidéo pour l'instant.</p></div>
     </div>
   </div>
-</div>
+</main>
 
 <script>
 const $ = s => document.querySelector(s);
@@ -160,6 +213,7 @@ let QUAL = 'eco';
 let PLAN = null;
 let poller = null;
 
+function step(n){ document.querySelectorAll('#steps .st').forEach(e=>{const s=+e.dataset.s; e.classList.toggle('on',s===n); e.classList.toggle('done',s<n)}) }
 function err(msg){const b=$('#errBox'); if(!msg){b.classList.add('hidden');return} b.textContent=msg; b.classList.remove('hidden'); b.scrollIntoView({behavior:'smooth',block:'center'})}
 async function api(path, opts={}){
   opts.headers = Object.assign({'x-code':CODE}, opts.headers||{});
@@ -197,36 +251,41 @@ async function loadVoices(){
 }
 $('#voix').onchange = e=>store.set('voix', e.target.value);
 $('#vitesse').oninput = e=>$('#vitVal').textContent=e.target.value;
-$('#video').onchange = e=>$('#videoName').textContent = e.target.files[0]?.name || 'Choisir un fichier (facultatif)';
-$('#musique').onchange = e=>$('#musName').textContent = e.target.files[0]?.name || 'Facultatif (MP3 libre de droits)';
+$('#video').onchange = e=>$('#videoName').textContent = e.target.files[0]?.name || 'Si le lien ne passe pas';
+$('#musique').onchange = e=>$('#musName').textContent = e.target.files[0]?.name || 'Facultatif · MP3 libre de droits';
+$('#btnPaste').onclick = async ()=>{
+  try{ const t = await navigator.clipboard.readText(); if(t) $('#lien').value = t.trim() }
+  catch(e){ $('#lien').focus(); err('Appuie longuement dans le champ puis « Coller ».') }
+};
 document.querySelectorAll('#qualite button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('#qualite button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); QUAL=b.dataset.q; updateCost();
 });
 
 $('#btnAnalyser').onclick = async ()=>{
   err(); const btn=$('#btnAnalyser');
-  const fd = new FormData(); fd.append('texte',$('#texte').value); fd.append('qualite',QUAL);
-  const f = $('#video').files[0]; if(f) fd.append('video', f);
-  if(!f && !$('#texte').value.trim()) return err('Importe la vidéo ou décris l\'astuce.');
-  busy(btn,true, f ? 'L\'IA regarde la vidéo…' : 'Écriture du script…');
+  const f = $('#video').files[0]; const lien = $('#lien').value.trim();
+  if(!f && !lien && !$('#texte').value.trim()) return err('Colle le lien de la vidéo, importe-la, ou décris l\'astuce.');
+  const fd = new FormData(); fd.append('texte',$('#texte').value); fd.append('qualite',QUAL); fd.append('lien', f ? '' : lien);
+  if(f) fd.append('video', f);
+  busy(btn,true, (f||lien) ? 'L\'IA regarde la vidéo…' : 'Écriture du script…');
   try{ PLAN = await api('/api/analyser',{method:'POST',body:fd}); renderPlan() }
   catch(e){ err(e.message) } finally{ busy(btn,false) }
 };
 
-const NIV = {ok:['ok','✅ Astuce sans danger'], prudence:['prudence','⚠️ À faire avec prudence'], danger:['danger','⛔ Astuce d\'origine dangereuse — remplacée par une version sûre']};
+const NIV = {ok:['ok','Astuce sans danger'], prudence:['prudence','À faire avec prudence'], danger:['danger','Astuce d\'origine dangereuse : remplacée par une version sûre']};
 function renderPlan(){
   const s = PLAN.securite||{}; const n = NIV[s.niveau]||NIV.prudence;
-  $('#secu').innerHTML = `<div class="alert ${n[0]}"><b>${n[1]}</b><br>${esc(s.message||'')}</div>`;
+  $('#secu').innerHTML = `<div class="alert ${n[0]}"><b>${n[1]}</b>${esc(s.message||'')}</div>`;
   $('#titre').value = PLAN.titre||'';
-  renderScenes(); $('#card2').classList.remove('hidden'); $('#card2').scrollIntoView({behavior:'smooth'});
+  renderScenes(); step(2); $('#card2').classList.remove('hidden'); $('#card2').scrollIntoView({behavior:'smooth'});
 }
 function renderScenes(){
   const box=$('#scenes'); box.innerHTML='';
   PLAN.scenes.forEach((sc,i)=>{
     const d=document.createElement('div'); d.className='scene';
-    d.innerHTML=`<div class="scene-top"><span class="badge">${i+1}</span><input type="text" value="${attr(sc.etiquette||'')}" placeholder="Badge (ex. ÉTAPE 1)"><button class="x" title="Supprimer">×</button></div>
-      <textarea placeholder="Texte lu par la voix off">${esc(sc.voix||'')}</textarea>
-      <details><summary>Ce que l'IA va filmer (en anglais)</summary><textarea>${esc(sc.visuel||'')}</textarea></details>`;
+    d.innerHTML=`<div class="scene-top"><span class="num">${i+1}</span><input type="text" value="${attr(sc.etiquette||'')}" placeholder="Badge (ex. ÉTAPE 1)" aria-label="Badge"><button class="x" type="button" aria-label="Supprimer la scène">×</button></div>
+      <textarea placeholder="Texte lu par la voix off" aria-label="Voix off">${esc(sc.voix||'')}</textarea>
+      <details><summary>Ce que l'IA va filmer</summary><textarea aria-label="Description visuelle">${esc(sc.visuel||'')}</textarea></details>`;
     const [eti] = d.querySelectorAll('input'); const [voix, vis] = d.querySelectorAll('textarea');
     eti.oninput=()=>sc.etiquette=eti.value; voix.oninput=()=>{sc.voix=voix.value; updateCost()}; vis.oninput=()=>sc.visuel=vis.value;
     d.querySelector('.x').onclick=()=>{ PLAN.scenes.splice(i,1); renderScenes() };
@@ -255,6 +314,7 @@ $('#btnGenerer').onclick = async ()=>{
 };
 
 function showJob(id){
+  step(3);
   $('#card3').classList.remove('hidden'); $('#result').classList.add('hidden'); $('#prog').classList.remove('hidden'); $('#jobErr').classList.add('hidden');
   $('#card3').scrollIntoView({behavior:'smooth'});
   clearInterval(poller); const tick = async ()=>{
@@ -262,7 +322,7 @@ function showJob(id){
       const j = await api('/api/jobs/'+id);
       $('#barFill').style.width=(j.progression||0)+'%'; $('#etape').textContent=j.etape||'';
       if(j.statut==='termine'){ clearInterval(poller); done(j); loadHist() }
-      if(j.statut==='erreur'){ clearInterval(poller); $('#jobErr').textContent='La vidéo n\'a pas pu être créée : '+j.erreur; $('#jobErr').classList.remove('hidden'); loadHist() }
+      if(j.statut==='erreur'){ clearInterval(poller); $('#prog').classList.add('hidden'); $('#jobErr').textContent='La vidéo n\'a pas pu être créée : '+j.erreur; $('#jobErr').classList.remove('hidden'); loadHist() }
     }catch(e){ clearInterval(poller); $('#jobErr').textContent=e.message; $('#jobErr').classList.remove('hidden') }
   };
   tick(); poller=setInterval(tick, 5000);
@@ -272,17 +332,17 @@ function done(j){
   const url='/api/jobs/'+j.id+'/video?code='+encodeURIComponent(CODE);
   $('#player').src=url; $('#dl').href=url;
   $('#pub').textContent=(j.description||'')+'\n\n'+(j.hashtags||[]).join(' ');
-  $('#warns').innerHTML=(j.avertissements||[]).map(w=>`<div class="alert prudence" style="margin-top:10px">${esc(w)}</div>`).join('');
+  $('#warns').innerHTML=(j.avertissements||[]).map(w=>`<div class="alert prudence">${esc(w)}</div>`).join('');
 }
 $('#btnCopy').onclick=()=>{ navigator.clipboard?.writeText($('#pub').textContent); $('#btnCopy').textContent='Copié ✓'; setTimeout(()=>$('#btnCopy').textContent='Copier le texte',1500) };
-$('#btnNew').onclick=()=>{ store.set('job',''); clearInterval(poller); PLAN=null; $('#card3').classList.add('hidden'); $('#card2').classList.add('hidden');
-  $('#texte').value=''; $('#video').value=''; $('#videoName').textContent='Choisir un fichier (facultatif)'; window.scrollTo({top:0,behavior:'smooth'}) };
+$('#btnNew').onclick=()=>{ store.set('job',''); clearInterval(poller); PLAN=null; step(1); $('#card3').classList.add('hidden'); $('#card2').classList.add('hidden');
+  $('#texte').value=''; $('#lien').value=''; $('#video').value=''; $('#videoName').textContent='Si le lien ne passe pas'; window.scrollTo({top:0,behavior:'smooth'}) };
 
 async function loadHist(){
   try{
     const {jobs}=await api('/api/jobs'); if(!jobs.length) return;
-    const lab={termine:'✅ prête',en_cours:'⏳ en cours',erreur:'❌ erreur'};
-    $('#hist').innerHTML=jobs.map(j=>`<a href="#" data-id="${j.id}">${esc(j.titre||'Astuce')}<span>${lab[j.statut]||''}</span></a>`).join('');
+    const lab={termine:'Prête',en_cours:'En cours',erreur:'Erreur'};
+    $('#hist').innerHTML=jobs.map(j=>`<a href="#" data-id="${attr(j.id)}">${esc(j.titre||'Astuce')}<span class="pill ${attr(j.statut)}">${lab[j.statut]||''}</span></a>`).join('');
     $('#hist').querySelectorAll('a').forEach(a=>a.onclick=e=>{e.preventDefault(); store.set('job',a.dataset.id); showJob(a.dataset.id)});
   }catch(e){}
 }
