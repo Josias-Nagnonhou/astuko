@@ -38,10 +38,16 @@ def auth(code):
         raise HTTPException(401, "Code d'accès incorrect.")
 
 
+SAVE_LOCK = threading.Lock()
+
+
 def save_job(job):
     JOBS[job["id"]] = job
-    with open(os.path.join(DATA, job["id"], "job.json"), "w", encoding="utf-8") as f:
-        json.dump(job, f, ensure_ascii=False)
+    with SAVE_LOCK:
+        p = os.path.join(DATA, job["id"], "job.json")
+        with open(p + ".tmp", "w", encoding="utf-8") as f:
+            json.dump(job, f, ensure_ascii=False)
+        os.replace(p + ".tmp", p)
 
 
 def load_job(jid):
@@ -95,9 +101,44 @@ def _compress_for_analysis(src, dst):
     return dst
 
 
+def _resolve_facebook(url):
+    """Les liens « partager » de Facebook redirigent vers la page de connexion : on retrouve la vraie adresse."""
+    import html as _html
+    import re
+    import requests
+
+    if not re.search(r"(facebook\.com/share|fb\.watch|m\.facebook\.com|facebook\.com/story\.php)", url):
+        return url
+    for ua in ("facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
+               "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148"):
+        try:
+            r = requests.get(url, headers={"User-Agent": ua, "Accept-Language": "fr-FR,fr;q=0.9"},
+                             allow_redirects=True, timeout=20)
+        except requests.RequestException:
+            continue
+        final = r.url
+        m = re.search(r'property="og:url"\s+content="([^"]+)"', r.text) or \
+            re.search(r'content="([^"]+)"\s+property="og:url"', r.text)
+        if m:
+            cand = _html.unescape(m.group(1))
+            if "login" not in cand:
+                return cand
+        if "login" not in final and final != url:
+            return final
+        m = re.search(r"[?&]next=([^&]+)", final)
+        if m:
+            from urllib.parse import unquote
+            nxt = unquote(m.group(1))
+            if "login" not in nxt:
+                return nxt
+    return url
+
+
 def _download_link(url, folder):
     """Récupère la vidéo d'un lien TikTok / Facebook / YouTube / Instagram (pour l'analyse seulement)."""
     import yt_dlp
+
+    url = _resolve_facebook(url)
 
     opts = {
         "outtmpl": os.path.join(folder, "lien.%(ext)s"),
@@ -196,39 +237,58 @@ VISUAL_STYLE = (" Photorealistic, vertical 9:16 framing, natural warm light, cin
 
 
 def _make_clip(job, i, scene, voice_dur, wd):
-    prompt = scene["visuel"].strip() + VISUAL_STYLE
+    """Crée le plan i. Reprend une tâche déjà lancée chez MiniMax après un redémarrage (pas de double paiement)."""
     out = os.path.join(wd, f"clip_{i}.mp4")
-    img_url = None
+    if os.path.exists(out) and os.path.getsize(out) > 1000:
+        return out, None
+    prompt = scene["visuel"].strip() + VISUAL_STYLE
+    t = job.setdefault("taches", {}).setdefault(str(i), {})
     try:
         if job["qualite"] == "premium":
-            url = mm.video_premium(prompt, math.ceil(voice_dur + 0.6))
+            if not t.get("task_id"):
+                t["task_id"] = mm.video_premium_submit(prompt, math.ceil(voice_dur + 0.6))
+                save_job(job)
+            url = mm.video_premium_wait(t["task_id"])
         else:
-            img_url = mm.image(prompt)
-            url = mm.video_eco(prompt, img_url)
-        mm.download(url, out)
+            if not t.get("img"):
+                t["img"] = mm.image(prompt)
+                save_job(job)
+            if not t.get("task_id"):
+                t["task_id"] = mm.video_eco_submit(prompt, t["img"])
+                save_job(job)
+            url = mm.video_eco_wait(t["task_id"])
+        mm.download(url, out + ".part")
+        os.replace(out + ".part", out)
         return out, None
     except Exception as e:  # plan de secours : image animée
         try:
-            if not img_url:
-                img_url = mm.image(prompt)
+            img_url = t.get("img") or mm.image(prompt)
             img = mm.download(img_url, os.path.join(wd, f"img_{i}.jpg"))
             montage.still_to_clip(img, out, voice_dur + 1)
-            return out, f"Plan {i + 1} : vidéo refusée/échouée, remplacée par une image animée ({e})."
+            return out, f"Plan {i + 1} : vidéo refusée ou échouée, remplacée par une image animée ({e})."
         except Exception as e2:
             raise mm.MiniMaxError(f"Plan {i + 1} impossible : {e2}")
 
 
+RUNNING = set()
+
+
 def run_job(jid):
+    if jid in RUNNING:
+        return
+    RUNNING.add(jid)
     job = load_job(jid)
     wd = os.path.join(DATA, jid)
     try:
         scenes = job["scenes"]
         n = len(scenes)
-        _step(job, "Voix off en cours…", 3)
+        _step(job, "Voix off en cours…", max(job.get("progression", 0), 3))
         voices, vdurs = [], []
         for i, s in enumerate(scenes):
             p = os.path.join(wd, f"voix_{i}.mp3")
-            mm.tts(s["voix"], job["voice_id"], p, job.get("vitesse", 1.0))
+            if not (os.path.exists(p) and os.path.getsize(p) > 500):
+                mm.tts(s["voix"], job["voice_id"], p + ".part", job.get("vitesse", 1.0))
+                os.replace(p + ".part", p)
             voices.append(p)
             vdurs.append(montage.duration(p))
             _step(job, f"Voix off : {i + 1}/{n}", 3 + 12 * (i + 1) / n)
@@ -251,7 +311,8 @@ def run_job(jid):
         with RENDER_LOCK:
             final = os.path.join(wd, "video_finale.mp4")
             music = job.get("musique")
-            montage.assemble(clips, voices, scenes, final, wd, titre=job.get("accroche", ""), music=music)
+            montage.assemble(clips, voices, scenes, final + ".tmp.mp4", wd, titre=job.get("accroche", ""), music=music)
+            os.replace(final + ".tmp.mp4", final)
         job["statut"] = "termine"
         job["duree"] = round(montage.duration(final), 1)
         _step(job, "Vidéo prête !", 100)
@@ -263,6 +324,25 @@ def run_job(jid):
         job["statut"] = "erreur"
         job["erreur"] = str(e)
         _step(job, "Erreur", job.get("progression", 0))
+    finally:
+        RUNNING.discard(jid)
+
+
+@app.on_event("startup")
+def resume_jobs():
+    """Après un redémarrage du serveur, on relance les vidéos qui étaient en cours."""
+    for d in os.listdir(DATA):
+        if d.startswith("_"):
+            shutil.rmtree(os.path.join(DATA, d), ignore_errors=True)
+            continue
+        try:
+            j = load_job(d)
+        except Exception:
+            continue
+        if j.get("statut") == "en_cours":
+            j["etape"] = "Reprise après redémarrage du serveur…"
+            save_job(j)
+            threading.Thread(target=run_job, args=(d,), daemon=True).start()
 
 
 @app.post("/api/generer")

@@ -136,17 +136,23 @@ def image(prompt, aspect="9:16"):
 
 
 # ---------------------------------------------------------------- vidéos
-def video_eco(prompt, image_url):
-    """Image -> vidéo 6 s avec Hailuo 2.3 Fast (mode économique)."""
+def video_eco_submit(prompt, image_url):
+    """Image -> vidéo 6 s avec Hailuo 2.3 Fast (mode économique). Renvoie l'id de tâche."""
     body = {"model": "MiniMax-Hailuo-2.3-Fast", "prompt": prompt[:2000], "first_frame_image": image_url,
             "duration": 6, "resolution": "768P", "prompt_optimizer": True}
     r = requests.post(f"{API}/v1/video_generation", headers=_h(), json=body, timeout=120)
-    task_id = _check(r)["task_id"]
+    return _check(r)["task_id"]
+
+
+def video_eco_wait(task_id):
     deadline = time.time() + 20 * 60
     while time.time() < deadline:
         time.sleep(10)
-        q = requests.get(f"{API}/v1/query/video_generation", headers=_h(), params={"task_id": task_id}, timeout=60)
-        d = _check(q)
+        try:
+            q = requests.get(f"{API}/v1/query/video_generation", headers=_h(), params={"task_id": task_id}, timeout=60)
+            d = _check(q)
+        except requests.RequestException:
+            continue
         st = d.get("status")
         if st == "Success":
             f = requests.get(f"{API}/v1/files/retrieve", headers=_h(), params={"file_id": d["file_id"]}, timeout=60)
@@ -156,17 +162,23 @@ def video_eco(prompt, image_url):
     raise MiniMaxError("La génération de ce plan a pris trop de temps.")
 
 
-def video_premium(prompt, duration):
-    """Texte -> vidéo verticale avec MiniMax H3 Max (mode premium)."""
+def video_premium_submit(prompt, duration):
+    """Texte -> vidéo verticale avec MiniMax H3 Max (mode premium). Renvoie l'id de tâche."""
     body = {"model": "MiniMax-H3-Max", "content": [{"type": "text", "text": prompt[:6000]}],
             "duration": int(max(5, min(15, duration))), "resolution": "768P", "ratio": "9:16"}
     r = requests.post(f"{API}/v2/video_generation", headers=_h(), json=body, timeout=120)
-    task_id = _check(r)["task_id"]
+    return _check(r)["task_id"]
+
+
+def video_premium_wait(task_id):
     deadline = time.time() + 25 * 60
     while time.time() < deadline:
         time.sleep(10)
-        q = requests.get(f"{API}/v2/query/video_generation/{task_id}", headers=_h(), timeout=60)
-        task = _check(q)["task"]
+        try:
+            q = requests.get(f"{API}/v2/query/video_generation/{task_id}", headers=_h(), timeout=60)
+            task = _check(q)["task"]
+        except requests.RequestException:
+            continue
         st = task.get("status")
         if st == "succeeded":
             return task["content"]["url"]
