@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Astuces Afrique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#17110c; --card:#221a13; --card2:#2b2118; --line:#3a2d21;
+  --txt:#f6ede3; --muted:#b8a593; --or:#f2a516; --or2:#ffcf5c; --terre:#d0612b;
+  --vert:#3fb37f; --rouge:#e5533d; --r:18px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.5 Inter,system-ui,sans-serif}
+body{background:
+  radial-gradient(1200px 500px at 110% -10%, rgba(242,165,22,.16), transparent 60%),
+  radial-gradient(800px 400px at -20% 10%, rgba(208,97,43,.14), transparent 60%), var(--bg);min-height:100vh}
+.wrap{max-width:640px;margin:0 auto;padding:18px 16px 80px}
+header{display:flex;align-items:center;gap:12px;margin:6px 0 18px}
+.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--or),var(--terre));
+  display:grid;place-items:center;font:800 22px 'Bricolage Grotesque';color:#1a0f05;box-shadow:0 8px 24px rgba(242,165,22,.3)}
+h1{font:800 24px/1.1 'Bricolage Grotesque',sans-serif;margin:0;letter-spacing:-.02em}
+header p{margin:2px 0 0;color:var(--muted);font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:16px}
+.card h2{font:700 18px 'Bricolage Grotesque';margin:0 0 4px;display:flex;align-items:center;gap:10px}
+.num{width:26px;height:26px;border-radius:50%;background:var(--or);color:#1a0f05;display:grid;place-items:center;font-size:14px;font-weight:800;flex:none}
+.hint{color:var(--muted);font-size:13px;margin:0 0 14px}
+label{display:block;font-weight:600;font-size:13px;margin:14px 0 6px;color:#e9dccd}
+textarea,input[type=text],select{width:100%;background:var(--card2);border:1px solid var(--line);color:var(--txt);
+  border-radius:12px;padding:12px;font:inherit;outline:none;transition:border .15s}
+textarea:focus,input:focus,select:focus{border-color:var(--or)}
+textarea{resize:vertical;min-height:90px}
+.file{display:flex;align-items:center;gap:10px;background:var(--card2);border:1px dashed #5a4532;border-radius:12px;padding:12px;cursor:pointer}
+.file input{display:none}
+.file span{color:var(--muted);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file b{color:var(--or2);font-weight:600;flex:none}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.seg button{background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:12px;padding:12px;text-align:left;cursor:pointer;font:inherit}
+.seg button small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.seg button.on{border-color:var(--or);background:rgba(242,165,22,.12)}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:18px;padding:15px;border:0;border-radius:14px;
+  background:linear-gradient(135deg,var(--or),#e8890f);color:#1a0f05;font:700 16px Inter;cursor:pointer;box-shadow:0 10px 24px rgba(242,165,22,.25)}
+.btn:disabled{opacity:.55;cursor:wait}
+.btn.ghost{background:var(--card2);color:var(--txt);box-shadow:none;border:1px solid var(--line)}
+.alert{border-radius:12px;padding:12px 14px;font-size:14px;margin-bottom:12px;border:1px solid}
+.alert.ok{background:rgba(63,179,127,.1);border-color:rgba(63,179,127,.4)}
+.alert.prudence{background:rgba(242,165,22,.1);border-color:rgba(242,165,22,.45)}
+.alert.danger,.alert.err{background:rgba(229,83,61,.12);border-color:rgba(229,83,61,.5)}
+.scene{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:12px;margin-top:10px}
+.scene-top{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.scene-top .badge{background:var(--or);color:#1a0f05;font-weight:800;font-size:11px;border-radius:6px;padding:3px 7px}
+.scene-top input{flex:1;padding:7px 10px;font-size:13px;background:var(--card)}
+.x{background:none;border:0;color:var(--muted);font-size:20px;cursor:pointer;padding:0 4px}
+.scene textarea{min-height:60px;background:var(--card)}
+details summary{cursor:pointer;color:var(--muted);font-size:12px;margin-top:8px}
+details textarea{margin-top:6px;font-size:12px;min-height:80px}
+.row{display:flex;gap:10px;align-items:center}
+.row > *{flex:1}
+input[type=range]{accent-color:var(--or);width:100%}
+.cost{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding:12px 14px;border-radius:12px;background:rgba(242,165,22,.08);border:1px solid rgba(242,165,22,.3)}
+.cost b{font:800 20px 'Bricolage Grotesque';color:var(--or2)}
+.bar{height:10px;background:var(--card2);border-radius:99px;overflow:hidden;margin:14px 0 8px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--terre),var(--or),var(--or2));transition:width .6s}
+.etape{color:var(--muted);font-size:14px}
+video{width:100%;max-height:70vh;border-radius:14px;background:#000;margin-top:6px}
+.pub{white-space:pre-wrap;background:var(--card2);border-radius:12px;padding:12px;font-size:14px;border:1px solid var(--line)}
+.hist a{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);color:var(--txt);text-decoration:none;font-size:14px}
+.hist a span{color:var(--muted);font-size:12px;flex:none}
+.hidden{display:none!important}
+.spin{width:16px;height:16px;border:2px solid rgba(0,0,0,.25);border-top-color:#1a0f05;border-radius:50%;animation:s .8s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}
+.small{font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">A</div>
+    <div><h1>Astuces Afrique</h1><p>De l'astuce repérée à la vidéo prête à publier</p></div>
+  </header>
+
+  <div id="cardCode" class="card hidden">
+    <h2>Code d'accès</h2>
+    <p class="hint">Entre ton code pour utiliser l'outil (il sera retenu sur ce téléphone).</p>
+    <input type="text" id="code" placeholder="Ton code" autocomplete="off">
+    <button class="btn" id="btnCode">Entrer</button>
+  </div>
+
+  <div id="app" class="hidden">
+    <div id="errBox" class="alert err hidden"></div>
+
+    <div class="card" id="card1">
+      <h2><span class="num">1</span>L'astuce</h2>
+      <p class="hint">Importe la vidéo que tu as repérée (l'outil la regarde pour comprendre l'astuce, puis crée une vidéo entièrement nouvelle), ou décris l'astuce avec tes mots.</p>
+      <label class="file" for="video"><b>📹 Vidéo d'origine</b><span id="videoName">Choisir un fichier (facultatif)</span><input type="file" id="video" accept="video/*"></label>
+      <label for="texte">Description ou transcription</label>
+      <textarea id="texte" placeholder="Ex. : astuce pour enlever les taches jaunes des vêtements blancs avec du bicarbonate et du citron…"></textarea>
+      <label>Qualité des images</label>
+      <div class="seg" id="qualite">
+        <button data-q="eco" class="on">Économique<small>≈ 0,20 $ par plan</small></button>
+        <button data-q="premium">Premium<small>Plus réaliste · ≈ 0,40 $ par plan</small></button>
+      </div>
+      <button class="btn" id="btnAnalyser">Analyser l'astuce</button>
+    </div>
+
+    <div class="card hidden" id="card2">
+      <h2><span class="num">2</span>Le script</h2>
+      <p class="hint">Relis et corrige si besoin. Rien n'est encore dépensé en vidéo.</p>
+      <div id="secu"></div>
+      <label for="titre">Titre (affiché au début de la vidéo)</label>
+      <input type="text" id="titre">
+      <div id="scenes"></div>
+      <button class="btn ghost" id="btnAdd" style="margin-top:10px">+ Ajouter une scène</button>
+
+      <label for="voix">Voix off</label>
+      <select id="voix"><option value="">Chargement des voix…</option></select>
+      <div class="row">
+        <div><label for="vitesse">Vitesse de la voix : <span id="vitVal">1.05</span></label>
+        <input type="range" id="vitesse" min="0.85" max="1.25" step="0.05" value="1.05"></div>
+      </div>
+      <label class="file" for="musique"><b>🎵 Musique de fond</b><span id="musName">Facultatif (MP3 libre de droits)</span><input type="file" id="musique" accept="audio/*"></label>
+
+      <div class="cost"><span>Coût estimé MiniMax</span><b id="cout">—</b></div>
+      <button class="btn" id="btnGenerer">Générer la vidéo</button>
+    </div>
+
+    <div class="card hidden" id="card3">
+      <h2><span class="num">3</span>Ta vidéo</h2>
+      <div id="prog">
+        <div class="bar"><i id="barFill"></i></div>
+        <div class="etape" id="etape">Démarrage…</div>
+        <p class="small">Tu peux fermer cette page : la vidéo continue de se fabriquer et tu la retrouveras dans « Mes vidéos ».</p>
+      </div>
+      <div id="result" class="hidden">
+        <video id="player" controls playsinline></video>
+        <a class="btn" id="dl" download>⬇️ Télécharger la vidéo</a>
+        <label>Texte de publication</label>
+        <div class="pub" id="pub"></div>
+        <button class="btn ghost" id="btnCopy">Copier le texte</button>
+        <div id="warns"></div>
+      </div>
+      <div id="jobErr" class="alert err hidden" style="margin-top:12px"></div>
+      <button class="btn ghost" id="btnNew">Nouvelle astuce</button>
+    </div>
+
+    <div class="card">
+      <h2>Mes vidéos</h2>
+      <div class="hist" id="hist"><p class="small">Aucune vidéo pour l'instant.</p></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const store = {get:k=>{try{return localStorage.getItem(k)}catch(e){return null}}, set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
+let CODE = store.get('code') || '';
+let QUAL = 'eco';
+let PLAN = null;
+let poller = null;
+
+function err(msg){const b=$('#errBox'); if(!msg){b.classList.add('hidden');return} b.textContent=msg; b.classList.remove('hidden'); b.scrollIntoView({behavior:'smooth',block:'center'})}
+async function api(path, opts={}){
+  opts.headers = Object.assign({'x-code':CODE}, opts.headers||{});
+  const r = await fetch(path, opts);
+  let data = null; try{ data = await r.json() }catch(e){}
+  if(r.status===401){ $('#cardCode').classList.remove('hidden'); $('#app').classList.add('hidden'); throw new Error('Code d\'accès incorrect.') }
+  if(!r.ok) throw new Error((data && data.detail) || ('Erreur serveur ('+r.status+')'));
+  return data;
+}
+function busy(btn, on, label){ btn.disabled=on; btn.innerHTML = on ? '<span class="spin"></span> '+label : btn.dataset.label }
+document.querySelectorAll('.btn').forEach(b=>b.dataset.label=b.innerHTML);
+
+async function boot(){
+  const c = await (await fetch('/api/config')).json();
+  if(!c.cle_configuree) err('La clé API MiniMax n\'est pas encore configurée sur le serveur.');
+  if(c.code_requis && !CODE){ $('#cardCode').classList.remove('hidden'); return }
+  start();
+}
+$('#btnCode').onclick = ()=>{ CODE=$('#code').value.trim(); store.set('code',CODE); $('#cardCode').classList.add('hidden'); start() };
+
+function start(){
+  $('#app').classList.remove('hidden');
+  loadVoices(); loadHist();
+  const cur = store.get('job'); if(cur) showJob(cur);
+}
+
+async function loadVoices(){
+  try{
+    const {voices} = await api('/api/voices');
+    const sel = $('#voix'); sel.innerHTML='';
+    if(!voices.length){ sel.innerHTML='<option value="">Aucune voix trouvée sur ton compte</option>'; return }
+    voices.forEach(v=>{ const o=document.createElement('option'); o.value=v.id; o.textContent=v.nom; sel.appendChild(o) });
+    const last = store.get('voix'); if(last && voices.some(v=>v.id===last)) sel.value=last;
+  }catch(e){ $('#voix').innerHTML='<option value="">Voix indisponibles : '+e.message+'</option>' }
+}
+$('#voix').onchange = e=>store.set('voix', e.target.value);
+$('#vitesse').oninput = e=>$('#vitVal').textContent=e.target.value;
+$('#video').onchange = e=>$('#videoName').textContent = e.target.files[0]?.name || 'Choisir un fichier (facultatif)';
+$('#musique').onchange = e=>$('#musName').textContent = e.target.files[0]?.name || 'Facultatif (MP3 libre de droits)';
+document.querySelectorAll('#qualite button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#qualite button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); QUAL=b.dataset.q; updateCost();
+});
+
+$('#btnAnalyser').onclick = async ()=>{
+  err(); const btn=$('#btnAnalyser');
+  const fd = new FormData(); fd.append('texte',$('#texte').value); fd.append('qualite',QUAL);
+  const f = $('#video').files[0]; if(f) fd.append('video', f);
+  if(!f && !$('#texte').value.trim()) return err('Importe la vidéo ou décris l\'astuce.');
+  busy(btn,true, f ? 'L\'IA regarde la vidéo…' : 'Écriture du script…');
+  try{ PLAN = await api('/api/analyser',{method:'POST',body:fd}); renderPlan() }
+  catch(e){ err(e.message) } finally{ busy(btn,false) }
+};
+
+const NIV = {ok:['ok','✅ Astuce sans danger'], prudence:['prudence','⚠️ À faire avec prudence'], danger:['danger','⛔ Astuce d\'origine dangereuse — remplacée par une version sûre']};
+function renderPlan(){
+  const s = PLAN.securite||{}; const n = NIV[s.niveau]||NIV.prudence;
+  $('#secu').innerHTML = `<div class="alert ${n[0]}"><b>${n[1]}</b><br>${esc(s.message||'')}</div>`;
+  $('#titre').value = PLAN.titre||'';
+  renderScenes(); $('#card2').classList.remove('hidden'); $('#card2').scrollIntoView({behavior:'smooth'});
+}
+function renderScenes(){
+  const box=$('#scenes'); box.innerHTML='';
+  PLAN.scenes.forEach((sc,i)=>{
+    const d=document.createElement('div'); d.className='scene';
+    d.innerHTML=`<div class="scene-top"><span class="badge">${i+1}</span><input type="text" value="${attr(sc.etiquette||'')}" placeholder="Badge (ex. ÉTAPE 1)"><button class="x" title="Supprimer">×</button></div>
+      <textarea placeholder="Texte lu par la voix off">${esc(sc.voix||'')}</textarea>
+      <details><summary>Ce que l'IA va filmer (en anglais)</summary><textarea>${esc(sc.visuel||'')}</textarea></details>`;
+    const [eti] = d.querySelectorAll('input'); const [voix, vis] = d.querySelectorAll('textarea');
+    eti.oninput=()=>sc.etiquette=eti.value; voix.oninput=()=>{sc.voix=voix.value; updateCost()}; vis.oninput=()=>sc.visuel=vis.value;
+    d.querySelector('.x').onclick=()=>{ PLAN.scenes.splice(i,1); renderScenes() };
+    box.appendChild(d);
+  });
+  updateCost();
+}
+$('#btnAdd').onclick=()=>{ PLAN.scenes.splice(PLAN.scenes.length-1,0,{etiquette:'ÉTAPE',voix:'',visuel:(PLAN.personnage? 'Main character: '+PLAN.personnage+'. ':'')}); renderScenes() };
+function updateCost(){
+  if(!PLAN) return;
+  const sc = PLAN.scenes; const chars = sc.reduce((a,s)=>a+(s.voix||'').length,0); let v = chars*0.0001;
+  if(QUAL==='premium') v += sc.reduce((a,s)=>a+Math.max(5,Math.ceil((s.voix||'').split(/\s+/).filter(Boolean).length/2.6+0.6)),0)*0.08;
+  else v += sc.length*0.1935;
+  $('#cout').textContent = '≈ '+v.toFixed(2).replace('.',',')+' $';
+}
+
+$('#btnGenerer').onclick = async ()=>{
+  err(); if(!$('#voix').value) return err('Choisis une voix.');
+  const btn=$('#btnGenerer'); busy(btn,true,'Lancement…');
+  const payload = {titre:$('#titre').value, accroche:$('#titre').value, scenes:PLAN.scenes, voice_id:$('#voix').value,
+    vitesse:+$('#vitesse').value, qualite:QUAL, description_publication:PLAN.description_publication||'', hashtags:PLAN.hashtags||[]};
+  const fd=new FormData(); fd.append('payload', JSON.stringify(payload));
+  const m=$('#musique').files[0]; if(m) fd.append('musique',m);
+  try{ const {id} = await api('/api/generer',{method:'POST',body:fd}); store.set('job',id); showJob(id); loadHist() }
+  catch(e){ err(e.message) } finally{ busy(btn,false) }
+};
+
+function showJob(id){
+  $('#card3').classList.remove('hidden'); $('#result').classList.add('hidden'); $('#prog').classList.remove('hidden'); $('#jobErr').classList.add('hidden');
+  $('#card3').scrollIntoView({behavior:'smooth'});
+  clearInterval(poller); const tick = async ()=>{
+    try{
+      const j = await api('/api/jobs/'+id);
+      $('#barFill').style.width=(j.progression||0)+'%'; $('#etape').textContent=j.etape||'';
+      if(j.statut==='termine'){ clearInterval(poller); done(j); loadHist() }
+      if(j.statut==='erreur'){ clearInterval(poller); $('#jobErr').textContent='La vidéo n\'a pas pu être créée : '+j.erreur; $('#jobErr').classList.remove('hidden'); loadHist() }
+    }catch(e){ clearInterval(poller); $('#jobErr').textContent=e.message; $('#jobErr').classList.remove('hidden') }
+  };
+  tick(); poller=setInterval(tick, 5000);
+}
+function done(j){
+  $('#prog').classList.add('hidden'); $('#result').classList.remove('hidden');
+  const url='/api/jobs/'+j.id+'/video?code='+encodeURIComponent(CODE);
+  $('#player').src=url; $('#dl').href=url;
+  $('#pub').textContent=(j.description||'')+'\n\n'+(j.hashtags||[]).join(' ');
+  $('#warns').innerHTML=(j.avertissements||[]).map(w=>`<div class="alert prudence" style="margin-top:10px">${esc(w)}</div>`).join('');
+}
+$('#btnCopy').onclick=()=>{ navigator.clipboard?.writeText($('#pub').textContent); $('#btnCopy').textContent='Copié ✓'; setTimeout(()=>$('#btnCopy').textContent='Copier le texte',1500) };
+$('#btnNew').onclick=()=>{ store.set('job',''); clearInterval(poller); PLAN=null; $('#card3').classList.add('hidden'); $('#card2').classList.add('hidden');
+  $('#texte').value=''; $('#video').value=''; $('#videoName').textContent='Choisir un fichier (facultatif)'; window.scrollTo({top:0,behavior:'smooth'}) };
+
+async function loadHist(){
+  try{
+    const {jobs}=await api('/api/jobs'); if(!jobs.length) return;
+    const lab={termine:'✅ prête',en_cours:'⏳ en cours',erreur:'❌ erreur'};
+    $('#hist').innerHTML=jobs.map(j=>`<a href="#" data-id="${j.id}">${esc(j.titre||'Astuce')}<span>${lab[j.statut]||''}</span></a>`).join('');
+    $('#hist').querySelectorAll('a').forEach(a=>a.onclick=e=>{e.preventDefault(); store.set('job',a.dataset.id); showJob(a.dataset.id)});
+  }catch(e){}
+}
+function esc(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function attr(s){return esc(s).replace(/"/g,'&quot;')}
+boot();
+</script>
+</body>
+</html>
