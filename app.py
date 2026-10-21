@@ -1,4 +1,4 @@
-"""Astuces Afrique — de l'astuce repérée à la vidéo prête à publier."""
+"""Astuko — de l'astuce repérée à la vidéo prête à publier."""
 import base64
 import json
 import math
@@ -28,7 +28,7 @@ PRIX_ECO_PAR_SCENE = 0.19 + 0.0035
 PRIX_PREMIUM_PAR_SECONDE = 0.08
 PRIX_VOIX_PAR_CARACTERE = 100 / 1_000_000
 
-app = FastAPI(title="Astuces Afrique")
+app = FastAPI(title="Astuko")
 JOBS = {}
 RENDER_LOCK = threading.Lock()
 
