@@ -340,6 +340,12 @@ def resume_jobs():
         except Exception:
             continue
         if j.get("statut") == "en_cours":
+            j["reprises"] = j.get("reprises", 0) + 1
+            if j["reprises"] > 3:
+                j["statut"] = "erreur"
+                j["erreur"] = "Le serveur a redémarré plusieurs fois pendant cette vidéo. Relance-la ou préviens Claude."
+                save_job(j)
+                continue
             j["etape"] = "Reprise après redémarrage du serveur…"
             save_job(j)
             threading.Thread(target=run_job, args=(d,), daemon=True).start()
