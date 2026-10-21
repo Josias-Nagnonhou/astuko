@@ -96,6 +96,15 @@ video{width:100%;max-height:72vh;border-radius:20px;background:#000;display:bloc
 .pill.en_cours{background:#FBEFD6;color:#7A5208}
 .pill.erreur{background:#F8E1DA;color:var(--rouge)}
 .small{font-size:12px;color:var(--muted)}
+.plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.plan{position:relative;border-radius:14px;overflow:hidden;background:var(--vert);aspect-ratio:9/16}
+.plan video,.plan img{width:100%;height:100%;object-fit:cover;border-radius:0;max-height:none;display:block}
+.plan .tag{position:absolute;top:6px;left:6px;background:var(--or);color:var(--vert);font-size:10px;font-weight:800;border-radius:6px;padding:2px 6px}
+.plan a{position:absolute;right:6px;bottom:6px;width:34px;height:34px;border-radius:10px;background:rgba(18,61,47,.85);color:#fff;display:grid;place-items:center}
+.plan.wait{display:grid;place-items:center;color:var(--vert-txt);font-size:11px;text-align:center;padding:8px}
+.voix{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.voix div{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.voix audio{flex:1;height:36px}
 .hidden{display:none!important}
 .spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:s .8s linear infinite}
 @keyframes s{to{transform:rotate(360deg)}}
@@ -195,6 +204,15 @@ video{width:100%;max-height:72vh;border-radius:20px;background:#000;display:bloc
         <div id="warns" style="margin-top:12px"></div>
       </div>
       <div id="jobErr" class="alert err hidden" style="margin-top:12px"></div>
+      <button class="btn hidden" id="btnRelancer" type="button">Relancer le montage (sans repayer)</button>
+
+      <div id="assets" class="hidden">
+        <label class="l">Plans générés <span class="small" id="nbPlans"></span></label>
+        <p class="small" style="margin:0">Chaque plan est disponible dès qu'il est prêt, même si le montage n'est pas fini.</p>
+        <div class="plans" id="plans"></div>
+        <details style="margin-top:10px"><summary>Voix off par scène</summary><div class="voix" id="voixList"></div></details>
+        <a class="btn ghost" id="zip" download>Tout télécharger (.zip)</a>
+      </div>
       <button class="btn vert" id="btnNew" type="button">Nouvelle astuce</button>
     </div>
 
@@ -314,19 +332,44 @@ $('#btnGenerer').onclick = async ()=>{
 };
 
 function showJob(id){
-  step(3);
+  step(3); lastFiles=''; $('#btnRelancer').classList.add('hidden');
   $('#card3').classList.remove('hidden'); $('#result').classList.add('hidden'); $('#prog').classList.remove('hidden'); $('#jobErr').classList.add('hidden');
   $('#card3').scrollIntoView({behavior:'smooth'});
   clearInterval(poller); const tick = async ()=>{
     try{
       const j = await api('/api/jobs/'+id);
-      $('#barFill').style.width=(j.progression||0)+'%'; $('#etape').textContent=j.etape||'';
+      $('#barFill').style.width=(j.progression||0)+'%'; $('#etape').textContent=j.etape||''; renderFiles(j);
+      $('#btnRelancer').classList.toggle('hidden', j.statut!=='erreur');
       if(j.statut==='termine'){ clearInterval(poller); done(j); loadHist() }
       if(j.statut==='erreur'){ clearInterval(poller); $('#prog').classList.add('hidden'); $('#jobErr').textContent='La vidéo n\'a pas pu être créée : '+j.erreur; $('#jobErr').classList.remove('hidden'); loadHist() }
     }catch(e){ clearInterval(poller); $('#jobErr').textContent=e.message; $('#jobErr').classList.remove('hidden') }
   };
   tick(); poller=setInterval(tick, 5000);
 }
+let lastFiles='';
+function renderFiles(j){
+  const files=j.fichiers||[]; const sig=files.map(f=>f.nom).join(',');
+  const nScenes=(j.scenes||[]).length;
+  $('#assets').classList.toggle('hidden', !files.length);
+  if(sig===lastFiles) return; lastFiles=sig;
+  const u=n=>'/api/jobs/'+j.id+'/fichier/'+n+'?code='+encodeURIComponent(CODE);
+  const ic='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 4v12M7 11l5 5 5-5"></path><path d="M4 20h16"></path></svg>';
+  let html='';
+  for(let i=1;i<=nScenes;i++){
+    const clip=files.find(f=>f.type==='plan'&&f.plan===i); const img=files.find(f=>f.type==='image'&&f.plan===i);
+    if(clip) html+=`<div class="plan"><video src="${u(clip.nom)}#t=0.5" muted playsinline preload="metadata" onclick="this.paused?this.play():this.pause()"></video><span class="tag">${i}</span><a href="${u(clip.nom)}" download aria-label="Télécharger le plan ${i}">${ic}</a></div>`;
+    else if(img) html+=`<div class="plan"><img src="${u(img.nom)}" alt="Image du plan ${i}"><span class="tag">${i}</span><a href="${u(img.nom)}" download aria-label="Télécharger l'image ${i}">${ic}</a></div>`;
+    else html+=`<div class="plan wait"><span class="tag">${i}</span>En cours…</div>`;
+  }
+  $('#plans').innerHTML=html;
+  $('#nbPlans').textContent='· '+files.filter(f=>f.type==='plan').length+'/'+nScenes;
+  $('#voixList').innerHTML=files.filter(f=>f.type==='voix').map(f=>`<div>${f.plan}<audio controls preload="none" src="${u(f.nom)}"></audio></div>`).join('');
+  $('#zip').href='/api/jobs/'+j.id+'/zip?code='+encodeURIComponent(CODE);
+}
+$('#btnRelancer').onclick=async()=>{
+  const id=store.get('job'); if(!id) return; const b=$('#btnRelancer'); busy(b,true,'Relance…');
+  try{ await api('/api/jobs/'+id+'/relancer',{method:'POST'}); showJob(id) }catch(e){ err(e.message) } finally{ busy(b,false) }
+};
 function done(j){
   $('#prog').classList.add('hidden'); $('#result').classList.remove('hidden');
   const url='/api/jobs/'+j.id+'/video?code='+encodeURIComponent(CODE);

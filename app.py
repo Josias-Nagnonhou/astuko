@@ -3,6 +3,7 @@ import base64
 import json
 import math
 import os
+import re
 import shutil
 import subprocess
 import threading
@@ -253,6 +254,12 @@ def _make_clip(job, i, scene, voice_dur, wd):
             if not t.get("img"):
                 t["img"] = mm.image(prompt)
                 save_job(job)
+            img_path = os.path.join(wd, f"image_{i}.jpg")
+            if not os.path.exists(img_path):
+                try:
+                    mm.download(t["img"], img_path)
+                except Exception:
+                    pass
             if not t.get("task_id"):
                 t["task_id"] = mm.video_eco_submit(prompt, t["img"])
                 save_job(job)
@@ -317,7 +324,7 @@ def run_job(jid):
         job["duree"] = round(montage.duration(final), 1)
         _step(job, "Vidéo prête !", 100)
         for f in os.listdir(wd):  # on libère la place, on garde la vidéo finale
-            if f.startswith(("seg_", "clip_", "img_")):
+            if f.startswith(("seg_", "video_sans_son")):
                 os.remove(os.path.join(wd, f))
     except Exception as e:
         traceback.print_exc()
@@ -400,7 +407,72 @@ def jobs(x_code: str = Header(default="")):
 def job_status(jid: str, x_code: str = Header(default="")):
     auth(x_code)
     j = load_job(jid)
-    return {k: v for k, v in j.items() if k not in ("musique",)}
+    out = {k: v for k, v in j.items() if k not in ("musique", "taches")}
+    out["fichiers"] = _fichiers(jid)
+    return out
+
+
+FICHIER_RE = re.compile(r"^(clip_\d+\.mp4|image_\d+\.jpg|img_\d+\.jpg|voix_\d+\.mp3|subs\.ass|video_finale\.mp4)$")
+
+
+def _fichiers(jid):
+    wd = os.path.join(DATA, os.path.basename(jid))
+    if not os.path.isdir(wd):
+        return []
+    res = []
+    for f in sorted(os.listdir(wd), key=lambda x: (re.sub(r"\d+", "", x), int((re.findall(r"\d+", x) or [0])[0]))):
+        if FICHIER_RE.match(f) and os.path.getsize(os.path.join(wd, f)) > 0:
+            num = re.findall(r"\d+", f)
+            kind = "plan" if f.startswith("clip_") else "image" if "image_" in f or f.startswith("img_") else \
+                "voix" if f.startswith("voix_") else "autre"
+            res.append({"nom": f, "type": kind, "plan": int(num[0]) + 1 if num and kind != "autre" else None})
+    return res
+
+
+@app.get("/api/jobs/{jid}/fichier/{nom}")
+def job_fichier(jid: str, nom: str, code: str = ""):
+    auth(code)
+    if not FICHIER_RE.match(nom):
+        raise HTTPException(404, "Fichier inconnu.")
+    p = os.path.join(DATA, os.path.basename(jid), nom)
+    if not os.path.exists(p):
+        raise HTTPException(404, "Fichier introuvable.")
+    types = {".mp4": "video/mp4", ".jpg": "image/jpeg", ".mp3": "audio/mpeg", ".ass": "text/plain"}
+    return FileResponse(p, media_type=types[os.path.splitext(nom)[1]], filename=f"{jid}-{nom}")
+
+
+@app.get("/api/jobs/{jid}/zip")
+def job_zip(jid: str, code: str = ""):
+    auth(code)
+    jid = os.path.basename(jid)
+    wd = os.path.join(DATA, jid)
+    files = _fichiers(jid)
+    if not files:
+        raise HTTPException(404, "Aucun fichier pour cette vidéo.")
+    zp = os.path.join(wd, "tout.zip")
+    import zipfile
+    with zipfile.ZipFile(zp, "w", zipfile.ZIP_STORED) as z:
+        for f in files:
+            z.write(os.path.join(wd, f["nom"]), f["nom"])
+        j = load_job(jid)
+        script = "\n\n".join(f"Plan {i + 1} — {s.get('etiquette', '')}\n{s.get('voix', '')}" for i, s in enumerate(j.get("scenes", [])))
+        z.writestr("script.txt", script + "\n\n---\n" + (j.get("description") or "") + "\n" + " ".join(j.get("hashtags") or []))
+    return FileResponse(zp, media_type="application/zip", filename=f"astuko-{jid}.zip")
+
+
+@app.post("/api/jobs/{jid}/relancer")
+def job_relancer(jid: str, x_code: str = Header(default="")):
+    """Relance une vidéo en erreur : réutilise les voix et plans déjà générés (rien n'est repayé)."""
+    auth(x_code)
+    j = load_job(jid)
+    if j["id"] in RUNNING:
+        return {"ok": True}
+    j["statut"] = "en_cours"
+    j["erreur"] = None
+    j["reprises"] = 0
+    _step(j, "Relance : on réutilise ce qui est déjà prêt…", j.get("progression", 0))
+    threading.Thread(target=run_job, args=(j["id"],), daemon=True).start()
+    return {"ok": True}
 
 
 @app.get("/api/jobs/{jid}/video")
